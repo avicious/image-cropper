@@ -1,16 +1,58 @@
-# React + Vite
+# Image Cropper
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A lightweight, state-driven React application designed for selecting, cropping, and previewing images using the **HTML5 Canvas API**. This component manages a complete client-side image processing workflow without the need for backend overhead.
 
-Currently, two official plugins are available:
+## 🚀 Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- **State-Driven Workflow**: Seamlessly transitions between selection, cropping, and preview modes.
+- **Canvas-Based Processing**: Uses the native `drawImage` API to extract precise pixel data.
+- **Base64 Export**: Generates a JPEG `dataURL` ready for immediate upload or local display.
+- **Interactive UI**: Includes options to re-crop the existing image or start fresh with a new file.
 
-## React Compiler
+## 🛠️ Architecture & Flow
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+The application functions as a simple state machine controlled by the `currentPage` state variable.
 
-## Expanding the ESLint configuration
+| State         | View             | Description                                                             |
+| :------------ | :--------------- | :---------------------------------------------------------------------- |
+| `choose-img`  | **FileInput**    | The entry point where the user selects an image file.                   |
+| `crop-img`    | **ImageCropper** | The workspace where the user defines the cropping coordinates.          |
+| `img-cropped` | **Preview**      | Displays the final result with options to "Crop again" or "Start Over." |
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+
+## 📂 Component Requirements
+
+To use this `App.js` logic, ensure you have the following sub-components in your `/components` directory:
+
+1.  **`FileInput.js`**: Handles the file selection and passes the image source (string/URL) to `onImageSelected`.
+2.  **`ImageCropper.js`**: An interactive UI that returns an object containing the crop coordinates:
+    - `x`: Horizontal starting point.
+    - `y`: Vertical starting point.
+    - `width`: Width of the cropped area.
+    - `height`: Height of the cropped area.
+
+## ⚙️ Core Logic
+
+The heavy lifting is handled by the `onCropDone` function, which utilizes the browser's native Canvas rendering context to slice the image:
+
+```javascript
+// Step 1: Create a hidden canvas
+const canvasEl = document.createElement("canvas");
+const context = canvasEl.getContext("2d");
+
+// Step 2: Draw only the selected portion of the image
+context.drawImage(
+  imageObj1,
+  imgCroppedArea.x, // Source X
+  imgCroppedArea.y, // Source Y
+  imgCroppedArea.width, // Source Width
+  imgCroppedArea.height, // Source Height
+  0,
+  0, // Destination X, Y
+  imgCroppedArea.width, // Destination Width
+  imgCroppedArea.height, // Destination Height
+);
+
+// Step 3: Convert to a usable image format
+const dataURL = canvasEl.toDataURL("image/jpeg");
+```
