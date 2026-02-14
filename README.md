@@ -19,18 +19,6 @@ The application functions as a simple state machine controlled by the `currentPa
 | `crop-img`    | **ImageCropper** | The workspace where the user defines the cropping coordinates.          |
 | `img-cropped` | **Preview**      | Displays the final result with options to "Crop again" or "Start Over." |
 
-
-## 📂 Component Requirements
-
-To use this `App.js` logic, ensure you have the following sub-components in your `/components` directory:
-
-1.  **`FileInput.js`**: Handles the file selection and passes the image source (string/URL) to `onImageSelected`.
-2.  **`ImageCropper.js`**: An interactive UI that returns an object containing the crop coordinates:
-    - `x`: Horizontal starting point.
-    - `y`: Vertical starting point.
-    - `width`: Width of the cropped area.
-    - `height`: Height of the cropped area.
-
 ## ⚙️ Core Logic
 
 The heavy lifting is handled by the `onCropDone` function, which utilizes the browser's native Canvas rendering context to slice the image:
